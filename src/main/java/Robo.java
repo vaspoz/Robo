@@ -1,5 +1,6 @@
 import utils.FileManager;
 import utils.Pairs;
+import utils.UserActions;
 
 import java.awt.*;
 import java.awt.event.InputEvent;
@@ -13,7 +14,6 @@ import java.util.concurrent.TimeUnit;
 public class Robo {
     public static Robot robot;
     public static Rectangle screenRect;
-    public static Pairs mousePoints = new Pairs();
     public static Scanner sc = new Scanner(System.in);
 
     public static void main(String[] args) throws IOException, InterruptedException, AWTException {
@@ -48,11 +48,14 @@ public class Robo {
 
     private static void robotRecord(int pointNum) throws InterruptedException {
         Point mousePoint;
-        int bufferDepth = 3;
-        int delay = 100;
+        int bufferDepth = 3; //accuracy
+        int delay = 100; //delay between capturing mouse position. Both this vars identify how long the cursor should keep unmoved to being captured
         Pairs pointBuffer = new Pairs(bufferDepth);
 
-        while (mousePoints.getSize() != pointNum) {
+        TimeUnit.SECONDS.sleep(1);
+        UserActions userActions = new UserActions();
+
+        while (userActions.capturedPointsNumber() != pointNum) {
             TimeUnit.MILLISECONDS.sleep(delay);
             mousePoint = MouseInfo.getPointerInfo().getLocation();
             pointBuffer.addWithShift(mousePoint.x, mousePoint.y);
@@ -64,9 +67,11 @@ public class Robo {
             for (int i = 1; i < bufferDepth; i++) {
                 isShot &= Arrays.equals(baseToCompare, pointBuffer.get(i));
             }
-            if (isShot && !mousePoints.contains(baseToCompare)) {
-                mousePoints.add(baseToCompare);
-                System.out.println(Arrays.toString(baseToCompare));
+            if (isShot && ! userActions.containPointer(baseToCompare)) {
+                userActions.addMousePointer(baseToCompare);
+                System.out.println(Arrays.toString(baseToCompare) + " captured. Action (left blank if not needed): ");
+                String action = sc.nextLine();
+                userActions.setActionForPoint(userActions.capturedPointsNumber() - 1, action);
                 pointBuffer.flush();
             }
         }
@@ -75,19 +80,22 @@ public class Robo {
         System.out.print("But now, please, give it a name: ");
         String macroName = sc.next();
 
-        FileManager.saveMacro(macroName, mousePoints);
+        FileManager.saveMacro(macroName, userActions);
     }
 
     private static void robotPlayback(String macroName) throws InterruptedException, AWTException {
         BufferedImage captureBefore;
-        mousePoints = FileManager.loadMacro(macroName);
+        UserActions userActions = FileManager.loadMacro(macroName);
 
-        for (int i = 0; i < mousePoints.getSize(); i++) {
-            int[] pair = mousePoints.get(i);
-            captureBefore = robot.createScreenCapture(screenRect);
-            moveAndClick(pair[0], pair[1]);
+        for (int i = 0; i < userActions.capturedPointsNumber(); i++) {
+
+            int[] pair = userActions.getMousePointer(i);
+            String action = userActions.getActionForPoint(i);
+            System.out.println("x: " + pair[0] + ", y: " + pair[1] + ", Action: " + (action.equals("") ? "none" : action));
+//            captureBefore = robot.createScreenCapture(screenRect);
+//            moveAndClick(pair[0], pair[1]);
 //            waitScreenUpdated(captureBefore);
-            TimeUnit.SECONDS.sleep(1);
+//            TimeUnit.SECONDS.sleep(1);
         }
 
         System.out.println("It was pleasure for me, master");
