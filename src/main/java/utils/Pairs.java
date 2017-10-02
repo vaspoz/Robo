@@ -2,12 +2,15 @@ package utils;
 
 import javafx.util.Pair;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 
 /**
  * Created by Vasilii_Pozdeev on 2/10/2017.
  */
-public class Pairs {
+public class Pairs implements Serializable{
+    public static final long serialVersionUID = 1L;
+
     private java.util.List<Pair<Integer, Integer>> pairs;
     private int length = 255;
 
