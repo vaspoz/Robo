@@ -21,6 +21,7 @@ public class Robo {
         screenRect = new Rectangle(Toolkit.getDefaultToolkit().getScreenSize());
 
         while (true) {
+            System.out.print("> ");
             String command = sc.next();
             if (!command.equals("robo")) {
                 continue;
@@ -52,7 +53,8 @@ public class Robo {
         int delay = 100; //delay between capturing mouse position. Both this vars identify how long the cursor should keep unmoved to being captured
         Pairs pointBuffer = new Pairs(bufferDepth);
 
-        TimeUnit.SECONDS.sleep(1);
+        System.out.println("You're too slow human. I'll wait for 2 seconds before start.");
+        TimeUnit.SECONDS.sleep(2);
         UserActions userActions = new UserActions();
 
         while (userActions.capturedPointsNumber() != pointNum) {
@@ -69,8 +71,8 @@ public class Robo {
             }
             if (isShot && ! userActions.containPointer(baseToCompare)) {
                 userActions.addMousePointer(baseToCompare);
-                System.out.println(Arrays.toString(baseToCompare) + " captured. Action (left blank if not needed): ");
-                String action = sc.nextLine();
+                System.out.println(Arrays.toString(baseToCompare) + " captured. Action (\"n\" for none): ");
+                String action = sc.next();
                 userActions.setActionForPoint(userActions.capturedPointsNumber() - 1, action);
                 pointBuffer.flush();
             }
