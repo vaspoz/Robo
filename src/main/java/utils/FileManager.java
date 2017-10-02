@@ -6,12 +6,12 @@ import java.io.*;
  * Created by Vasilii_Pozdeev on 2/10/2017.
  */
 public class FileManager {
-    public static void saveMacro(String fileName, Pairs mousePoints) {
+    public static void saveMacro(String fileName, UserActions userActions) {
         try {
             FileOutputStream fos = new FileOutputStream(new File(fileName + ".mcr"));
             ObjectOutputStream oos = new ObjectOutputStream(fos);
 
-            oos.writeObject(mousePoints);
+            oos.writeObject(userActions);
 
             oos.close();
             fos.close();
@@ -22,13 +22,13 @@ public class FileManager {
         }
     }
 
-    public static Pairs loadMacro(String macroName) {
+    public static UserActions loadMacro(String macroName) {
         try {
             FileInputStream fis = new FileInputStream(new File(macroName + ".mcr"));
             ObjectInputStream ois = new ObjectInputStream(fis);
 
-            Pairs loadedPairs = (Pairs)ois.readObject();
-            return loadedPairs;
+            UserActions loadedUserActions = (UserActions)ois.readObject();
+            return loadedUserActions;
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         } catch (IOException e) {

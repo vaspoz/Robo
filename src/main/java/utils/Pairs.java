@@ -4,6 +4,7 @@ import javafx.util.Pair;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by Vasilii_Pozdeev on 2/10/2017.
@@ -11,7 +12,7 @@ import java.util.ArrayList;
 public class Pairs implements Serializable{
     public static final long serialVersionUID = 1L;
 
-    private java.util.List<Pair<Integer, Integer>> pairs;
+    private List<Pair<Integer, Integer>> pairs;
     private int length = 255;
 
     public Pairs() {
