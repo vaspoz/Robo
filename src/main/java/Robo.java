@@ -1,3 +1,4 @@
+import utils.FileManager;
 import utils.Pairs;
 
 import java.awt.*;
@@ -6,21 +7,42 @@ import java.awt.image.BufferedImage;
 import java.awt.image.DataBufferInt;
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.Scanner;
 import java.util.concurrent.TimeUnit;
 
 public class Robo {
     public static Robot robot;
     public static Rectangle screenRect;
     public static Pairs mousePoints = new Pairs();
+    public static Scanner sc = new Scanner(System.in);
 
     public static void main(String[] args) throws IOException, InterruptedException, AWTException {
         robot = new Robot();
         screenRect = new Rectangle(Toolkit.getDefaultToolkit().getScreenSize());
 
-        robotRecord(5);
-        System.out.println(mousePoints);
-        TimeUnit.SECONDS.sleep(5);
-        robotRepeat();
+        while (true) {
+            String command = sc.next();
+            if (!command.equals("robo")) {
+                continue;
+            }
+
+            String subcom = sc.next();
+            switch (subcom) {
+                case "macro":
+                    int stepsNum = sc.nextInt();
+                    robotRecord(stepsNum);
+                    break;
+                case "play":
+                    String macroName = sc.next();
+                    robotPlayback(macroName);
+                    break;
+                case "stop":
+                    System.out.println("See you soon, human");
+                    TimeUnit.SECONDS.sleep(1);
+                    System.exit(0);
+
+            }
+        }
 
     }
 
@@ -47,13 +69,18 @@ public class Robo {
                 System.out.println(Arrays.toString(baseToCompare));
                 pointBuffer.flush();
             }
-
-
         }
+
+        System.out.println("I became more intelligent. Soon you'll fall down on your knees!");
+        System.out.print("But now, please, give it a name: ");
+        String macroName = sc.next();
+
+        FileManager.saveMacro(macroName, mousePoints);
     }
 
-    private static void robotRepeat() throws InterruptedException, AWTException {
+    private static void robotPlayback(String macroName) throws InterruptedException, AWTException {
         BufferedImage captureBefore;
+        mousePoints = FileManager.loadMacro(macroName);
 
         for (int i = 0; i < mousePoints.getSize(); i++) {
             int[] pair = mousePoints.get(i);
@@ -62,6 +89,8 @@ public class Robo {
 //            waitScreenUpdated(captureBefore);
             TimeUnit.SECONDS.sleep(1);
         }
+
+        System.out.println("It was pleasure for me, master");
     }
 
     private static void waitScreenUpdated(BufferedImage captureBefore) throws InterruptedException {
