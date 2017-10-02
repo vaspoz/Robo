@@ -3,6 +3,7 @@ package utils;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Scanner;
 
 /**
  * Created by Vasilii_Pozdeev on 2/10/2017.
@@ -58,5 +59,15 @@ public class UserActions implements Serializable {
 
     public int[] getMousePointer(int i) {
         return mousePointers.get(i);
+    }
+
+    public void assignActions(Scanner sc) {
+        for (int i = 0; i < mousePointers.getSize(); i++) {
+            int[] point = mousePointers.get(i);
+            System.out.print("Enter action for point [" + point[0] + ", " + point[1] + "]: ");
+            String action = sc.nextLine();
+
+            actions.add(i, action);
+        }
     }
 }

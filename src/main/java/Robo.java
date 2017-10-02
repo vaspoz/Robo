@@ -1,9 +1,11 @@
 import utils.FileManager;
+import utils.Keyboard;
 import utils.Pairs;
 import utils.UserActions;
 
 import java.awt.*;
 import java.awt.event.InputEvent;
+import java.awt.event.KeyEvent;
 import java.awt.image.BufferedImage;
 import java.awt.image.DataBufferInt;
 import java.io.IOException;
@@ -12,13 +14,17 @@ import java.util.Scanner;
 import java.util.concurrent.TimeUnit;
 
 public class Robo {
+    public static final double DELTA = 0.05;
+
     public static Robot robot;
     public static Rectangle screenRect;
     public static Scanner sc = new Scanner(System.in);
+    public static Keyboard keyboard;
 
     public static void main(String[] args) throws IOException, InterruptedException, AWTException {
         robot = new Robot();
         screenRect = new Rectangle(Toolkit.getDefaultToolkit().getScreenSize());
+        keyboard = new Keyboard(robot);
 
         while (true) {
             System.out.print("> ");
@@ -31,6 +37,7 @@ public class Robo {
             switch (subcom) {
                 case "macro":
                     int stepsNum = sc.nextInt();
+                    sc.nextLine();
                     robotRecord(stepsNum);
                     break;
                 case "play":
@@ -50,7 +57,7 @@ public class Robo {
     private static void robotRecord(int pointNum) throws InterruptedException {
         Point mousePoint;
         int bufferDepth = 3; //accuracy
-        int delay = 100; //delay between capturing mouse position. Both this vars identify how long the cursor should keep unmoved to being captured
+        int delay = 200; //delay between capturing mouse position. Both this vars identify how long the cursor should keep unmoved to being captured
         Pairs pointBuffer = new Pairs(bufferDepth);
 
         System.out.println("You're too slow human. I'll wait for 2 seconds before start.");
@@ -69,14 +76,14 @@ public class Robo {
             for (int i = 1; i < bufferDepth; i++) {
                 isShot &= Arrays.equals(baseToCompare, pointBuffer.get(i));
             }
-            if (isShot && ! userActions.containPointer(baseToCompare)) {
+            if (isShot && !userActions.containPointer(baseToCompare)) {
                 userActions.addMousePointer(baseToCompare);
-                System.out.println(Arrays.toString(baseToCompare) + " captured. Action (\"n\" for none): ");
-                String action = sc.next();
-                userActions.setActionForPoint(userActions.capturedPointsNumber() - 1, action);
+                System.out.println(Arrays.toString(baseToCompare));
                 pointBuffer.flush();
             }
         }
+
+        userActions.assignActions(sc);
 
         System.out.println("I became more intelligent. Soon you'll fall down on your knees!");
         System.out.print("But now, please, give it a name: ");
@@ -88,19 +95,32 @@ public class Robo {
     private static void robotPlayback(String macroName) throws InterruptedException, AWTException {
         BufferedImage captureBefore;
         UserActions userActions = FileManager.loadMacro(macroName);
+        if (userActions == null) {
+            throw new NullPointerException("Cannot find the macro, human. You've made mistake. Again");
+        }
 
         for (int i = 0; i < userActions.capturedPointsNumber(); i++) {
 
             int[] pair = userActions.getMousePointer(i);
             String action = userActions.getActionForPoint(i);
-            System.out.println("x: " + pair[0] + ", y: " + pair[1] + ", Action: " + (action.equals("") ? "none" : action));
-//            captureBefore = robot.createScreenCapture(screenRect);
-//            moveAndClick(pair[0], pair[1]);
-//            waitScreenUpdated(captureBefore);
-//            TimeUnit.SECONDS.sleep(1);
+            System.out.println("x: " + pair[0] + ", y: " + pair[1] + ", Action: " + (action.equals("n") ? "none" : action));
+
+            captureBefore = robot.createScreenCapture(screenRect);
+            moveAndClick(pair[0], pair[1]);
+            switch (action) {
+                case "wait":
+                    waitScreenUpdated(captureBefore);
+                    break;
+                case "n":
+                    break;
+                default:
+                    keyboard.type(action);
+                    break;
+            }
+            TimeUnit.MILLISECONDS.sleep(300);
         }
 
-        System.out.println("It was pleasure for me, master");
+        System.out.println("Just in time. As usual");
     }
 
     private static void waitScreenUpdated(BufferedImage captureBefore) throws InterruptedException {
@@ -108,7 +128,7 @@ public class Robo {
 
         int[] pixelsBefore = ((DataBufferInt) captureBefore.getRaster().getDataBuffer()).getData();
 
-        while (delta < 0.25) {
+        while (delta < DELTA) {
             TimeUnit.MILLISECONDS.sleep(100);
             BufferedImage captureAfter = robot.createScreenCapture(screenRect);
             int[] pixelsAfter = ((DataBufferInt) captureAfter.getRaster().getDataBuffer()).getData();
