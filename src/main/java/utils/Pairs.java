@@ -2,26 +2,31 @@ package utils;
 
 import javafx.util.Pair;
 
+import java.awt.*;
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 /**
  * Created by Vasilii_Pozdeev on 2/10/2017.
  */
-public class Pairs implements Serializable{
+public class Pairs implements Serializable {
     public static final long serialVersionUID = 1L;
 
     private List<Pair<Integer, Integer>> pairs;
     private int length = 255;
 
     public Pairs() {
-        pairs = new ArrayList<Pair<Integer, Integer>>();
+        pairs = new ArrayList<>();
     }
 
     public Pairs(int length) {
-        pairs = new ArrayList<Pair<Integer, Integer>>();
+        pairs = new ArrayList<>();
         this.length = length;
+        for (int i = 0; i < length; i++) {
+            pairs.add(new Pair<>(-1, -1));
+        }
     }
 
     public void add(int i1, int i2) {
@@ -72,5 +77,13 @@ public class Pairs implements Serializable{
         }
         return false;
 
+    }
+
+    public Pair getPair(int index) {
+        return pairs.get(index);
+    }
+
+    public void addWithShift(Point mousePoint) {
+        addWithShift(mousePoint.x, mousePoint.y);
     }
 }

@@ -1,5 +1,6 @@
 package utils;
 
+import java.awt.*;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
@@ -22,14 +23,6 @@ public class UserActions implements Serializable {
     public UserActions(Pairs mousePointers) {
         this.mousePointers = mousePointers;
         actions = new ArrayList<>();
-    }
-
-    public void addMousePointer(int[] pair) {
-        mousePointers.add(pair);
-    }
-
-    public void addMousePointer(int i, int j) {
-        mousePointers.add(i, j);
     }
 
     public void setActionForPoint(int index, String action) {
@@ -69,5 +62,13 @@ public class UserActions implements Serializable {
 
             actions.add(i, action);
         }
+    }
+
+    public boolean containPointer(Point mousePoint) {
+        return containPointer(new int[]{mousePoint.x, mousePoint.y});
+    }
+
+    public void addMousePointer(Point mousePoint) {
+        mousePointers.add(mousePoint.x, mousePoint.y);
     }
 }
