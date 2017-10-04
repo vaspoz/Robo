@@ -14,7 +14,7 @@ import java.util.concurrent.TimeUnit;
 
 public class Robo {
     public static final double IMAGE_COMPARE_DELTA = 0.05;
-    public static final double POINTERS_DISTANCE_TO_TRIGGER_ACTION = 20.0;
+    public static final double POINTERS_DISTANCE_TO_TRIGGER_ACTION = 30.0;
 
     public static final int POINTERS_BUFFER_DEPTH = 4;
     public static final int DELAY_MOUSE_CAPTURING = 200;
