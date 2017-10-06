@@ -31,7 +31,7 @@ public class Robo {
 //        while (true) {
 //            waitScreenUpdated(robot.createScreenCapture(screenRect));
 //        }
-        robotRecord(5);
+//        robotRecord(5);
 
         while (true) {
             System.out.print("> ");
@@ -90,35 +90,24 @@ public class Robo {
                 double dist = distance(mousePoint, mousePointBuf);
                 if ((dist < POINTERS_DISTANCE_TO_TRIGGER_ACTION) && (!eventTriggered)) {
                     System.out.println("EVENT!");
+                    String pointAction = sc.next();
+                    userActions.setActionForPoint(mousePointBuf, pointAction);
                     eventTriggered = true;
-                    System.out.println("Distance: " + dist + ", eventTriggered: " + eventTriggered);
                 } else if (dist >= POINTERS_DISTANCE_TO_TRIGGER_ACTION) {
                     mousePointBuf = mousePoint;
                     userActions.addMousePointer(mousePoint);
                     System.out.println(mousePoint);
                     pointBuffer.flush();
                     eventTriggered = false;
-                    System.out.println("Distance: " + dist + ", eventTriggered: " + eventTriggered);
                 }
             }
         }
-
-        userActions.assignActions(sc);
 
         System.out.println("I became more intelligent. Soon you'll fall down on your knees!");
         System.out.print("But now, please, give it a name: ");
         String macroName = sc.next();
 
         FileManager.saveMacro(macroName, userActions);
-    }
-
-    private static boolean elementsAreTheSame(Pairs pointBuffer) {
-        boolean isEqual = true;
-        double[] baseToCompare = pointBuffer.get(0);
-        for (int i = 1; i < pointBuffer.getSize(); i++) {
-            isEqual &= Arrays.equals(baseToCompare, pointBuffer.get(i));
-        }
-        return isEqual;
     }
 
     private static void robotPlayback(String macroName) throws InterruptedException, AWTException {
@@ -128,14 +117,16 @@ public class Robo {
             throw new NullPointerException("Cannot find the macro, human. You've made mistake. Again");
         }
 
-        for (int i = 0; i < userActions.capturedPointsNumber(); i++) {
+        for (Point mousePoint:userActions.getMousePointers()) {
 
-            double[] pair = userActions.getMousePointer(i);
-            String action = userActions.getActionForPoint(i);
-            System.out.println("x: " + pair[0] + ", y: " + pair[1] + ", Action: " + (action.equals("n") ? "none" : action));
+//        }
+//        for (int i = 0; i < userActions.capturedPointsNumber(); i++) {
+
+            String action = userActions.getActionForPoint(mousePoint);
+            System.out.println("x: " + mousePoint.getX() + ", y: " + mousePoint.getY() + ", Action: " + (action.equals("n") ? "none" : action));
 
             captureBefore = robot.createScreenCapture(screenRect);
-            moveAndClick(pair[0], pair[1]);
+            moveAndClick(mousePoint);
             switch (action) {
                 case "wait":
                     waitScreenUpdated(captureBefore);
@@ -150,6 +141,15 @@ public class Robo {
         }
 
         System.out.println("Just in time. As usual");
+    }
+
+    private static boolean elementsAreTheSame(Pairs pointBuffer) {
+        boolean isEqual = true;
+        double[] baseToCompare = pointBuffer.get(0);
+        for (int i = 1; i < pointBuffer.getSize(); i++) {
+            isEqual &= Arrays.equals(baseToCompare, pointBuffer.get(i));
+        }
+        return isEqual;
     }
 
     private static void waitScreenUpdated(BufferedImage captureBefore) throws InterruptedException {
@@ -205,15 +205,6 @@ public class Robo {
         return true;
     }
 
-
-    private static void graphOut(double delta) {
-        if (delta * 100 < 1) return;
-        for (int i = 0; i < delta * 100; i++) {
-            System.out.print(">");
-        }
-        System.out.println();
-    }
-
     private static double getImagesDelta(int[] pixelsBefore, int[] pixelsAfter) {
         int length;
         if (pixelsBefore.length < pixelsAfter.length) {
@@ -232,8 +223,8 @@ public class Robo {
         return (double) deltaCount / (double) length;
     }
 
-    private static void moveAndClick(double x, double y) throws AWTException, InterruptedException {
-        robot.mouseMove((int)x, (int)y);
+    private static void moveAndClick(Point mousePoint) throws AWTException, InterruptedException {
+        robot.mouseMove(mousePoint.x, mousePoint.y);
         robot.mousePress(InputEvent.BUTTON1_MASK);
         robot.mouseRelease(InputEvent.BUTTON1_MASK);
     }
