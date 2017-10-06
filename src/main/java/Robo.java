@@ -119,9 +119,6 @@ public class Robo {
 
         for (Point mousePoint:userActions.getMousePointers()) {
 
-//        }
-//        for (int i = 0; i < userActions.capturedPointsNumber(); i++) {
-
             String action = userActions.getActionForPoint(mousePoint);
             System.out.println("x: " + mousePoint.getX() + ", y: " + mousePoint.getY() + ", Action: " + (action.equals("n") ? "none" : action));
 
@@ -131,7 +128,7 @@ public class Robo {
                 case "wait":
                     waitScreenUpdated(captureBefore);
                     break;
-                case "n":
+                case "":
                     break;
                 default:
                     keyboard.type(action);
@@ -168,6 +165,7 @@ public class Robo {
             delta = getImagesDelta(pixelsBefore, pixelsAfter);
             pixelsBefore = pixelsAfter;
             deltasBuffer.addWithShift(delta);
+            System.out.println(deltasBuffer);
 
             if (lastIsBiggest(deltasBuffer)) {
                 pickIndex = deltasBuffer.getSize() - 1;
