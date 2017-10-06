@@ -45,18 +45,18 @@ public class UserActions implements Serializable {
         return mousePointers.getSize();
     }
 
-    public boolean containPointer(int[] baseToCompare) {
+    public boolean containPointer(double[] baseToCompare) {
         return mousePointers.contains(baseToCompare);
 
     }
 
-    public int[] getMousePointer(int i) {
+    public double[] getMousePointer(int i) {
         return mousePointers.get(i);
     }
 
     public void assignActions(Scanner sc) {
         for (int i = 0; i < mousePointers.getSize(); i++) {
-            int[] point = mousePointers.get(i);
+            double[] point = mousePointers.get(i);
             System.out.print("Enter action for point [" + point[0] + ", " + point[1] + "]: ");
             String action = sc.nextLine();
 
@@ -65,7 +65,7 @@ public class UserActions implements Serializable {
     }
 
     public boolean containPointer(Point mousePoint) {
-        return containPointer(new int[]{mousePoint.x, mousePoint.y});
+        return containPointer(new double[]{mousePoint.x, mousePoint.y});
     }
 
     public void addMousePointer(Point mousePoint) {

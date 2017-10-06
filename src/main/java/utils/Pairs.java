@@ -14,7 +14,7 @@ import java.util.List;
 public class Pairs implements Serializable {
     public static final long serialVersionUID = 1L;
 
-    private List<Pair<Integer, Integer>> pairs;
+    private List<Pair<Double, Double>> pairs;
     private int length = 255;
 
     public Pairs() {
@@ -25,15 +25,15 @@ public class Pairs implements Serializable {
         pairs = new ArrayList<>();
         this.length = length;
         for (int i = 0; i < length; i++) {
-            pairs.add(new Pair<>(-1, -1));
+            pairs.add(new Pair<>(-1.0, -1.0));
         }
     }
 
-    public void add(int i1, int i2) {
+    public void add(double i1, double i2) {
         pairs.add(new Pair(i1, i2));
     }
 
-    public void addWithShift(int i1, int i2) {
+    public void addWithShift(double i1, double i2) {
         if (pairs.size() == length) {
             for (int i = 0; i < pairs.size() - 1; i++) {
                 pairs.set(i, pairs.get(i + 1));
@@ -43,8 +43,8 @@ public class Pairs implements Serializable {
         add(i1, i2);
     }
 
-    public int[] get(int index) {
-        int[] pair = new int[2];
+    public double[] get(int index) {
+        double[] pair = new double[2];
         pair[0] = pairs.get(index).getKey();
         pair[1] = pairs.get(index).getValue();
         return pair;
@@ -62,16 +62,16 @@ public class Pairs implements Serializable {
                 '}';
     }
 
-    public void add(int[] pair) {
+    public void add(double[] pair) {
         add(pair[0], pair[1]);
     }
 
     public void flush() {
-        pairs = new ArrayList<Pair<Integer, Integer>>();
+        pairs = new ArrayList<>();
     }
 
-    public boolean contains(int[] baseToCompare) {
-        for (Pair<Integer, Integer> pair : pairs) {
+    public boolean contains(double[] baseToCompare) {
+        for (Pair<Double, Double> pair : pairs) {
             if (pair.getKey() == baseToCompare[0] && pair.getValue() == baseToCompare[1])
                 return true;
         }
