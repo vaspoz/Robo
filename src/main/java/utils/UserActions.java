@@ -1,10 +1,11 @@
 package utils;
 
+import javafx.util.Pair;
+
 import java.awt.*;
 import java.io.Serializable;
-import java.util.ArrayList;
+import java.util.*;
 import java.util.List;
-import java.util.Scanner;
 
 /**
  * Created by Vasilii_Pozdeev on 2/10/2017.
@@ -12,47 +13,37 @@ import java.util.Scanner;
 public class UserActions implements Serializable {
     public static final long serialVersionUID = 2L;
 
+    private Map<Point, String> pointerAction;
     private Pairs mousePointers;
     private List<String> actions;
 
     public UserActions() {
+        pointerAction = new HashMap<>();
+
         mousePointers = new Pairs();
         actions = new ArrayList<>();
     }
 
-    public UserActions(Pairs mousePointers) {
-        this.mousePointers = mousePointers;
-        actions = new ArrayList<>();
+    public void setActionForPoint(Point point, String action) {
+        pointerAction.put(point, action);
     }
 
-    public void setActionForPoint(int index, String action) {
-        actions.add(index, action);
-    }
-
-    public String getActionForPoint(int index) {
-        return actions.get(index);
-    }
-
-    public List<String> getActions() {
-        return actions;
-    }
-
-    public Pairs getMousePointers() {
-        return mousePointers;
+    public String getActionForPoint(Point point) {
+        return pointerAction.get(point);
     }
 
     public int capturedPointsNumber() {
-        return mousePointers.getSize();
+        return pointerAction.size();
     }
 
-    public boolean containPointer(double[] baseToCompare) {
-        return mousePointers.contains(baseToCompare);
+    public boolean containPointer(Point point) {
+        return pointerAction.containsKey(point);
 
     }
 
-    public double[] getMousePointer(int i) {
-        return mousePointers.get(i);
-    }
+//    public double[] getMousePointer(int i) {
+//        return mousePointers.get(i);
+//    }
 
     public void assignActions(Scanner sc) {
         for (int i = 0; i < mousePointers.getSize(); i++) {
@@ -64,11 +55,12 @@ public class UserActions implements Serializable {
         }
     }
 
-    public boolean containPointer(Point mousePoint) {
-        return containPointer(new double[]{mousePoint.x, mousePoint.y});
+    public void addMousePointer(Point mousePoint) {
+        pointerAction.put(mousePoint, "");
     }
 
-    public void addMousePointer(Point mousePoint) {
-        mousePointers.add(mousePoint.x, mousePoint.y);
+    public Iterable<? extends Point> getMousePointers() {
+        return pointerAction.keySet();
+
     }
 }
